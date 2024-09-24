@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  mariadb:
+    image: mariadb:latest
+    container_name: my_mariadb_grocery_shop
+    environment:
+      MYSQL_ROOT_PASSWORD: "grocery"
+      MYSQL_DATABASE: "groceryshop"
+      MYSQL_USER: "grocery"
+      MYSQL_PASSWORD: "grocery"
+    ports:
+      - "3307:3307"
+    volumes:
+      - ./mariadb_data:/var/lib/mysql
