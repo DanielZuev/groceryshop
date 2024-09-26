@@ -52,7 +52,7 @@ public class ProductInventoryRepository extends NamedParameterJdbcDaoSupport {
         return new ProductInventory(productInventory.storageUnitId(), productInventory.shopId(), productInventory.productId(), productInventory.availableStock());
     }
 
-    public void removeProductsFromShopStorageUnit(final ProductInventory productInventory) {
+    public void deleteProductsFromShopStorageUnit(final ProductInventory productInventory) {
         final String sql = "DELETE FROM products_inventory WHERE storage_unit_id = :storageUnitId AND shop_id = :shopId AND product_id = :productId";
         final MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("storageUnitId", productInventory.storageUnitId())
@@ -63,11 +63,11 @@ public class ProductInventoryRepository extends NamedParameterJdbcDaoSupport {
         if (rowsAffected == 0) {
             throw new RuntimeException(
                     "Failed to delete product from inventory with ID " +
-                        productInventory.productId() +
-                    " registered in shop with ID " +
-                        productInventory.shopId() +
-                    " and Storage Unit ID " +
-                        productInventory.storageUnitId());
+                            productInventory.productId() +
+                            " in shop with ID " +
+                            productInventory.shopId() +
+                            " and Storage Unit ID " +
+                            productInventory.storageUnitId());
         }
     }
 
@@ -76,7 +76,7 @@ public class ProductInventoryRepository extends NamedParameterJdbcDaoSupport {
         final MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("storageUnitId", storageUnitId)
                 .addValue("shopId", shopId);
-        List<ProductInventory> productInventories = getNamedParameterJdbcTemplate().query(sql, params, productInventoryRowMapper);
+        final List<ProductInventory> productInventories = getNamedParameterJdbcTemplate().query(sql, params, productInventoryRowMapper);
         if (productInventories.isEmpty()) {
             throw new RuntimeException("No products in storage unit with id " + storageUnitId + " found for shop with id " + shopId);
         }
@@ -88,7 +88,7 @@ public class ProductInventoryRepository extends NamedParameterJdbcDaoSupport {
         final String sql = "SELECT * FROM products_inventory WHERE shop_id = :shopId ORDER BY storage_unit_id";
         final MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("shopId", shopId);
-        List<ProductInventory> productInventories = getNamedParameterJdbcTemplate().query(sql, params, productInventoryRowMapper);
+        final List<ProductInventory> productInventories = getNamedParameterJdbcTemplate().query(sql, params, productInventoryRowMapper);
         if (productInventories.isEmpty()) {
             throw new RuntimeException("No products in all storage found for shop with id " + shopId);
         }

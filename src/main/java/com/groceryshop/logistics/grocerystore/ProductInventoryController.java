@@ -13,6 +13,7 @@ public class ProductInventoryController {
         this.productInventoryService = productInventoryService;
     }
 
+    //kogato zarezhdame stoka
     @PutMapping("/{shopId}/{storageUnitId}/{productId}")
     public ResponseEntity<Void> addOrUpdateProductInventory(
             @PathVariable final Integer shopId,
@@ -34,6 +35,32 @@ public class ProductInventoryController {
         // Return HTTP 204 No Content to indicate success
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/shop/{shopId}/product/{productId}/transfer")
+    public ResponseEntity<Void> moveStock(
+            @PathVariable final Integer shopId,
+            @PathVariable final Integer productId,
+            @RequestBody final StockTransferDTO stockTransferDTO) {
+
+        final Integer fromStorageUnitId = stockTransferDTO.fromStorageUnitId();
+        final Integer toStorageUnitId = stockTransferDTO.toStorageUnitId();
+        final Double requestedAmount = stockTransferDTO.requestedAmount();
+
+        // Call the service method to perform the stock transfer
+        productInventoryService.moveStock(shopId, productId, fromStorageUnitId, toStorageUnitId, requestedAmount);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/shop/{shopId}/product/{productId}/stock")
+    public ResponseEntity<List<ProductInventory>> getProductAvailableStockInStorageUnits(
+            @PathVariable final Integer shopId,
+            @PathVariable final Integer productId) {
+
+        final List<ProductInventory> productInventories = productInventoryService.productAvailableStockInStorageUnits(shopId, productId);
+        return ResponseEntity.ok(productInventories);
+    }
+
 
     @GetMapping("/search")
     public ResponseEntity<List<Product>> searchForProduct(
