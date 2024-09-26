@@ -1,2 +1,6 @@
-package com.groceryshop.logistics.grocerystore;public enum QuantityMetricType {
+package com.groceryshop.logistics.grocerystore;
+
+public enum QuantityMetricType {
+    KILOGRAM,
+    PIECE
 }

@@ -1,5 +1,7 @@
 package com.groceryshop.logistics.authentication;
 
+import com.groceryshop.logistics.grocerystore.ShopStorageUnitService;
+import com.groceryshop.logistics.grocerystore.StorageUnitRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -7,10 +9,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class GroceryShopService {
     private final GroceryShopRepository groceryShopRepository;
+    private final ShopStorageUnitService shopStorageUnitService;
     private final BCryptPasswordEncoder encoder;
 
-    public GroceryShopService(GroceryShopRepository groceryShopRepository) {
+
+    public GroceryShopService(GroceryShopRepository groceryShopRepository, ShopStorageUnitService shopStorageUnitService) {
         this.groceryShopRepository = groceryShopRepository;
+        this.shopStorageUnitService = shopStorageUnitService;
         this.encoder = new BCryptPasswordEncoder();
     }
 
@@ -18,7 +23,10 @@ public class GroceryShopService {
     public GroceryShop registerGroceryShop(final GroceryShopRequestDTO registerInfo) {
         final String hashedPassword = encoder.encode(registerInfo.shopPassword());
         final GroceryShop groceryShopToRegister = new GroceryShop(null, registerInfo.shopName(), hashedPassword);
-        return groceryShopRepository.registerGroceryShop(groceryShopToRegister);
+
+        GroceryShop groceryShop = groceryShopRepository.registerGroceryShop(groceryShopToRegister);
+        shopStorageUnitService.createShopStorageUnit("In-shop " + groceryShop.shopName(), groceryShop.shopId());
+        return groceryShop;
     }
 
     @Transactional
